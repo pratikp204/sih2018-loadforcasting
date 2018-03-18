@@ -6,4 +6,4 @@ df['humid'] = df1['humid']
 df['windspd'] = df1['windspd']
 print df
 f=open('finaldataset.csv','wb')
-pd.DataFrame.to_csv(df,path_or_buf=f,index=False,columns=['monthofyear','dayofmonth','Date','Hour','load','prevload','temp','humid','windspd'])
+pd.DataFrame.to_csv(df,path_or_buf=f,index=False,columns=['monthofyear','weekday','Date','Hour','load','prevload','temp','humid','windspd'])

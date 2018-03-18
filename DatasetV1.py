@@ -16,4 +16,4 @@ df['dayofmonth'] = da
 df['monthofyear'] = mo
 df['weekday'] = wd
 f=open("Constructed dataset.csv",'w')
-pd.DataFrame.to_csv(df,path_or_buf=f,columns=['monthofyear','dayofmonth','Date','Hour','load','prevload'],index=False)
+pd.DataFrame.to_csv(df,path_or_buf=f,columns=['monthofyear','dayofmonth','weekday','Date','Hour','load','prevload'],index=False)
