@@ -1,8 +1,6 @@
 from pymongo import MongoClient
 from urllib2 import urlopen
-from bson import json_util as jso
 from json import loads
-from json import dumps
 import csv
 
 
