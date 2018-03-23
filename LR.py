@@ -4,6 +4,7 @@ from sklearn.feature_selection import mutual_info_regression
 import pandas as pd
 import numpy as np
 from sklearn import preprocessing
+import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 
 df = pd.read_csv('Constructed datasetV2.csv')
@@ -20,7 +21,7 @@ df['m2']=df['monthofyear']**2
 df['m3']=df['monthofyear']**3
 df['m4']=df['monthofyear']**4
 train_y = np.asarray(df['load'])
-train_x = np.array(df.drop(['Date','load','prevload','lasthr'],1))
+train_x = np.array(df.drop(['Date','load','lasthr'],1))
 test_y = train_y[int(len(train_x)*0.9):]
 train_y = train_y[:int(len(train_y)*0.9)]
 
