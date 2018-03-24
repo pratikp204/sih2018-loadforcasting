@@ -1,61 +1,54 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import itertools
+import pandas as pd
 import tensorflow as tf
-from sklearn.datasets import load_iris
+import numpy as np
 
+#from sklearn import cross_validation
+#from sklearn.linear_model import LinearRegression
+#from sklearn.feature_selection import mutual_info_regression
+import pandas as pd
+import numpy as np
+#from sklearn import decomposition
+#from sklearn import preprocessing
+#from scipy.stats import pearsonr
+tf.logging.set_verbosity(tf.logging.INFO)
 
-def input_evaluation_fn():
-    features={'column1':np.array([]),
-              'column2':np.array([]),
-              'column3':np.array([]),
-              'column4':np.array([])}
-    labels=np.array([])
-    return features,labels
+df=pd.read_csv('datasetv3.csv')
+test_set = df[int(len(df)*0.9):(len(df)-10)]
+predict_set=df[(len(df)-10):]
+training_set=df[:int(len(df)*0.9)]
+features=['monthofyear','dayofmonth','weekday','Hour','T','lasthr','hour2','hour3','hour4','hour5','t2','weekday2','m2','m3','m4']
+label='load'
 
-def train_input_fn(features,labels,batch_size):
-    '''An input function for training'''
-    #convert the inputs to a dataset
-    dataset=tf.data.Dataset.from_tensor_slices((dict(features),labels))
+feature_cols = [tf.feature_column.numeric_column(k) for k in features]
 
-    #shuffle,repeat and batch the examples
+#train_x = preprocessing.scale(train_x)
 
-    return dataset.shuffle(1000).repeat().batch(batch_size)
-
-# define the feature columns
-
-my_feature_columns=[]
-for key in train_x.keys():
-    my_feature_columns.append(tf.feature_column.numeric_column(key=key))
-
-
-#instantiate an estimator
-
-#build a DNN with 2 hidden layers and 10 nodes in each hidden layer
-
-classifier=tf.estimator.DNNClassifier(
-    feature_columns=my_feature_columns,
-    #two hidden layers of 10 nodes each
-    hidden_units=[10,10],
-    n_classes=3
+regressor=tf.estimator.DNNRegressor(
+    feature_columns=feature_cols,
+    hidden_units=[],
+    optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1)
 )
 
-#train,Evaluate, predict
-#train
-classifier.train(input_fn=lambda : iris_data.train_input_fn(train_x,train_y,args.batch_size),
-                 steps=args.train_steps)
-#evaluate
-eval_result=classifier.evaluate(
-    input_fn=lambda :iris_data.eval_input_fn(test_x,test_y,args.batch_size)
-)
-#make predictions
+def get_input_fn(data_set,num_epochs=None,shuffle=True):
+    return tf.estimator.inputs.pandas_input_fn(
+        x=pd.DataFrame({k: data_set[k].values for k in features}),
+        y=pd.Series(data_set[label].values),
+        num_epochs=num_epochs,
+        shuffle=shuffle
+    )
 
-expected=['setosa','class2','class3']
-predict_x={
-    'column1':np.array([]),
-    'column2':np.array([]),
-    'column3':np.array([])
-}
+regressor.train(input_fn=get_input_fn(training_set))
 
-predictions=classifier.predict(
-    input_fn=lambda:iris_data.eval_input_fn(predict_x,batch_size=args.batch_size)
+ev=regressor.evaluate(input_fn=get_input_fn(test_set,num_epochs=1,shuffle=False))
 
-)
+loss_score = ev["loss"]
+print('Loss : {0:f}'.format(loss_score))
+
+y=regressor.predict(input_fn=get_input_fn(predict_set,num_epochs=1,shuffle=False))
+print(y)
 
