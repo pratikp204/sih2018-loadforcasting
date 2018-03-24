@@ -56,6 +56,6 @@ predict_x={
 
 predictions=classifier.predict(
     input_fn=lambda:iris_data.eval_input_fn(predict_x,batch_size=args.batch_size)
-
+    
 )
 
