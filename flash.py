@@ -6,6 +6,7 @@ import itertools
 import pandas as pd
 import tensorflow as tf
 import numpy as np
+from sklearn import decomposition
 
 #from sklearn import cross_validation
 #from sklearn.linear_model import LinearRegression
@@ -26,7 +27,7 @@ label='load'
 
 feature_cols = [tf.feature_column.numeric_column(k) for k in features]
 
-train_x = preprocessing.scale()
+#train_x = preprocessing.scale()
 
 regressor=tf.estimator.DNNRegressor(
     feature_columns=feature_cols,
@@ -35,8 +36,14 @@ regressor=tf.estimator.DNNRegressor(
 )
 
 def get_input_fn(data_set,num_epochs=None,shuffle=True):
+    train_x = pd.DataFrame({k: data_set[k].values for k in features})
+    train_x=preprocessing.scale(train_x)
+    pca = decomposition.PCA(n_components=5)
+    pca.fit(train_x)
+    train_x = pca.transform(train_x)
+    train_x=pd.DataFrame(train_x)
     return tf.estimator.inputs.pandas_input_fn(
-        x=pd.DataFrame({k: data_set[k].values for k in features}),
+        x=train_x,
         y=pd.Series(data_set[label].values),
         num_epochs=num_epochs,
         shuffle=shuffle

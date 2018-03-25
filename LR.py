@@ -28,7 +28,7 @@ df.to_csv('datasetv3.csv')
 train_y = np.asarray(df['load'])
 train_x = np.array(df.drop(['Date','load'],1))
 
-test_y = train_y[int(len(train_x)*0.9):]
+test_y = train_y [int(len(train_x)*0.9):]
 train_y = train_y[:int(len(train_y)*0.9)]
 train_x = preprocessing.scale(train_x)
 pca = decomposition.PCA(n_components=15)
