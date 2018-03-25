@@ -7,6 +7,7 @@ db = client.zones
 
 class FetchDataUnit:
 
+    @staticmethod
     def getTrainData(self,zone):
         val = {'temp':[],'date':[],'hour':[],'month':[],'weekday':[],'load':[]}
         curs=db['zone'+str(zone)].find()
@@ -18,14 +19,14 @@ class FetchDataUnit:
             val['date'].append(doc['date'])
             val['month'].append(doc['month'])
         return val
-
-    def storeData(self,pickleobj,zone):
+    @staticmethod
+    def storeObj(self,pickleobj,zone):
         da = datetime.datetime.now()
         db = client.picklestore
         col = db['zone'+str(zone)]
         dic = {'_id':'{0}{1}{2}{3}'.format(da.day,da.month,da.year,da.hour),'obj':Binary(pickleobj)}
         col.insert(dic)
-
+    @staticmethod
     def get_obj(self,date,zone):
         oid = str(date).replace('/','')
         db = client.picklestore
