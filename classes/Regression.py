@@ -11,14 +11,15 @@ from sklearn import decomposition,svm
 from sklearn import preprocessing
 from sklearn.neural_network import MLPRegressor as mlpr
 from scipy.stats import pearsonr
-from pickle import load,dump
+from pickle import load,dumps
 class Regression():
 
-    def __init__(self,default_hyprerparameter,epoch_loss,batch_loss,epoch_accuracy):
-        self.default_hyprerparameter = default_hyprerparameter
-        self.epoch_loss = epoch_loss
-        self.batch_loss = batch_loss
-        self.epoch_accuracy = epoch_accuracy
+    def __init__(self):
+        pass
+        #self.default_hyprerparameter = default_hyprerparameter
+        #self.epoch_loss = epoch_loss
+        #self.batch_loss = batch_loss
+        #self.epoch_accuracy = epoch_accuracy
 
     def read_dataset(self,input_set,n_components):
         if(n_components>15):
@@ -88,9 +89,16 @@ class Regression():
     def test(self,model):
         pass
 
+    @staticmethod
     def save_model(self,obj,zone,score,name):
-        fd.storeObj()        
-        
-    def predict(self):
-        pass
-        
+        du=dumps(obj)
+        fd.storeObj(pickleobj=du,zone=zone,acc=score,name=name)
+
+    @staticmethod
+    def predict(self,input_x,name,zone):
+        obj=fd.get_obj(name,zone)
+        return obj.predict(input_x)
+
+
+if __name__=='__main__':
+    r=Regression()

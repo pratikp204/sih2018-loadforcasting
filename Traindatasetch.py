@@ -26,8 +26,8 @@ class FetchDataUnit:
         dic = {'_id':'{0}{1}{2}{3}'.format(da.day,da.month,da.year,da.hour),'obj':Binary(pickleobj)}
         col.insert(dic)
 
-    def get_obj(self,date,zone):
-        oid = str(date).replace('/','')
+    def get_obj(self,name,zone):
+        oid = str(name)
         db = client.picklestore
         col = db['zone' + str(zone)]
         dic = col.find({'_id':oid})

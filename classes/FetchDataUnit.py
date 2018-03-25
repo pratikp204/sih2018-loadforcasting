@@ -19,15 +19,27 @@ class FetchData:
             val['month'].append(doc['month'])
         return val
     @staticmethod
-    def storeObj(self,pickleobj,zone):
+    def storeObj(self,pickleobj,zone,acc,name='{0}{1}{2}{3}'.format(da.day,da.month,da.year,da.hour)):
         da = datetime.datetime.now()
         db = client.picklestore
         col = db['zone'+str(zone)]
-        dic = {'_id':'{0}{1}{2}{3}'.format(da.day,da.month,da.year,da.hour),'obj':Binary(pickleobj)}
+        dic = {'_id':name,'obj':Binary(pickleobj),'accuracy':acc}
         col.insert(dic)
     @staticmethod
-    def get_obj(self,date,zone):
-        oid = str(date).replace('/','')
+    def setCurrentObj(self,obj,zone,name):
+        db = client.picklestore
+        col = db['currentWrkObj']
+        col.update({'_id':zone},{'$set':{'_id':zone,'obj':Binary(obj),'name':name}},{'$upsert':True})
+
+    @staticmethod
+    def get_current_obj(zone):
+        db = client.picklestore
+        col = db['currentWrkObj']
+        val = col.find({'zone':zone})
+        return val
+    @staticmethod
+    def get_obj(name,zone):
+        oid = str(name)
         db = client.picklestore
         col = db['zone' + str(zone)]
         dic = col.find({'_id':oid})
