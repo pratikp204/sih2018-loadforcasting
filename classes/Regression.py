@@ -25,9 +25,9 @@ class Regression():
         if(n_components>15):
             n_components=15
         df=pd.DataFrame(input_set).drop([ 'date'])
-        df = df[24:]
-        df['prevhr']=df.load.shift(+24)
-        df['lasthr'] = df.load.shift(+1)
+        # df = df[24:]
+        # df['prevhr']=df.load.shift(+24)
+        # df['lasthr'] = df.load.shift(+1)
         df = df[1:]
         df['hour2'] = df['Hour'] ** 2
         df['hour3'] = df['Hour'] ** 3
