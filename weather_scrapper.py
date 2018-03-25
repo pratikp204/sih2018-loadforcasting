@@ -2,6 +2,7 @@ from urllib2 import urlopen
 from bs4 import BeautifulSoup
 import json
 from pymongo import MongoClient
+
 client = MongoClient('localhost:27017')
 db = client.weather
 def make_soup(url):
