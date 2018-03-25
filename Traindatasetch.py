@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from bson import Binary
-import datetime.datetime
+import datetime
 client = MongoClient(host='192.168.0.230')
 db = client.zones
 
