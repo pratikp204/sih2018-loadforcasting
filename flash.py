@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import numpy as np
 #from sklearn import decomposition
-#from sklearn import preprocessing
+from sklearn import preprocessing
 #from scipy.stats import pearsonr
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -21,17 +21,17 @@ df=pd.read_csv('datasetv3.csv')
 test_set = df[int(len(df)*0.9):(len(df)-10)]
 predict_set=df[(len(df)-10):]
 training_set=df[:int(len(df)*0.9)]
-features=['monthofyear','dayofmonth','weekday','Hour','T','lasthr','hour2','hour3','hour4','hour5','t2','weekday2','m2','m3','m4']
+features=['monthofyear','dayofmonth','weekday','Hour','T','lasthr']
 label='load'
 
 feature_cols = [tf.feature_column.numeric_column(k) for k in features]
 
-#train_x = preprocessing.scale(train_x)
+train_x = preprocessing.scale()
 
 regressor=tf.estimator.DNNRegressor(
     feature_columns=feature_cols,
-    hidden_units=[],
-    optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1)
+    hidden_units=[4],
+    optimizer=tf.train.AdadeltaOptimizer(learning_rate=1)
 )
 
 def get_input_fn(data_set,num_epochs=None,shuffle=True):
@@ -42,7 +42,7 @@ def get_input_fn(data_set,num_epochs=None,shuffle=True):
         shuffle=shuffle
     )
 
-regressor.train(input_fn=get_input_fn(training_set))
+regressor.train(input_fn=get_input_fn(training_set,num_epochs=5000))
 
 ev=regressor.evaluate(input_fn=get_input_fn(test_set,num_epochs=1,shuffle=False))
 
