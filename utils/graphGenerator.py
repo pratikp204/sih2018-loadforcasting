@@ -26,3 +26,4 @@ class Graph_gen():
             plt.savefig(svfig+".png")
         if showgraph:
             plt.show()
+        plt.close()
