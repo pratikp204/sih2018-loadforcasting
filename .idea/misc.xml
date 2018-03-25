@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7 (tensorflow)" project-jdk-type="Python SDK" />
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7" project-jdk-type="Python SDK" />
+>>>>>>> 1ebb35e8450c1cc15887a9e6a766c545e292dd25
 </project>
