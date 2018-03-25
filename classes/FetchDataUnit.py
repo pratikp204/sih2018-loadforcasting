@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 from bson import Binary
-import datetime
+import datetime,time
 
-class FetchDataUnit:
+class FetchData:
 
     def __init__(self):
         self.client = MongoClient(host='192.168.0.223')
@@ -28,25 +28,34 @@ class FetchDataUnit:
         db = self.client.picklestore
         col = db['zone' + str(zone)]
         dic = col.find({'_id':oid})
-        return dic['obj'],dic['preprocessing']
+        return dic['obj'],dic['preprocessing'],dic['PCA']
 
-    def storeObj(self, pickleobj, zone, acc, preobj, name='{0}/{1}/{2}{3}'.format(datetime.datetime.now().day, datetime.datetime.now().month, datetime.datetime.now().year, datetime.datetime.now().hour)):
+    def storeObj(self, pickleobj, zone, acc,preobj,pca,name='{0}/{1}/{2}{3}'.format(datetime.datetime.now().day, datetime.datetime.now().month, datetime.datetime.now().year, datetime.datetime.now().hour)):
         db = self.client.picklestore
         col = db['zone' + str(zone)]
-        dic = {'_id': name, 'obj': Binary(pickleobj), 'accuracy': acc,'preprocessing':preobj,'zone':zone}
+        dic = {'_id': name, 'obj': Binary(pickleobj), 'accuracy': acc,'preprocessing':preobj,'zone':zone,'PCA':pca}
         col.insert(dic)
 
-    def setCurrentObj(self, obj, zone, name,preobj):
+    def setCurrentObj(self, obj, zone, name,preobj,pca,acc):
         db = self.client.picklestore
         col = db['currentWrkObj']
-        col.update({'_id': zone}, {'$set': {'_id': zone, 'obj': Binary(obj), 'name': name,'preprocessing':preobj}}, {'$upsert': True})
+        col.update({'_id': zone}, {'$set': {'_id': zone, 'obj': Binary(obj), 'name': name,'preprocessing':preobj,'PCA':pca,'accuracy':acc}}, {'$upsert': True})
 
     def get_current_obj(self,zone):
         db = self.client.picklestore
         col = db['currentWrkObj']
         val = col.find({'zone': zone})
-        return val['obj'],val['preprocessing']
+        return val['obj'],val['preprocessing'],val['PCA']
 
+    def predictstore(self,pred):
+        db = self.client.one
+        pre={}
+        no=datetime.datetime.now()
+        pre['_id'] = str(no.day) + str(no.month) + str(no.year) + str(x)
+        pre['prediction'] = pred['prediction']
+        pre['actual'] = 0
+        time.sleep(10)
+        db.prediction.insert_one(pre)
 
 if __name__ == '__main__':
-    s = FetchDataUnit()
+    s = FetchData()
