@@ -19,11 +19,11 @@ class FetchDataUnit:
             val['month'].append(doc['month'])
         return val
 
-    def storeData(self,pickleobj,zone):
+    def storeData(self,pickleobj,zone,accuracy,model):
         da = datetime.datetime.now()
         db = client.picklestore
         col = db['zone'+str(zone)]
-        dic = {'_id':'{0}{1}{2}{3}'.format(da.day,da.month,da.year,da.hour),'obj':Binary(pickleobj)}
+        dic = {'_id':'{0}{1}{2}{3}'.format(da.day,da.month,da.year,da.hour),'obj':Binary(pickleobj),'accuracy':accuracy,'model':model}
         col.insert(dic)
 
     def get_obj(self,date,zone):
