@@ -63,4 +63,4 @@ class FetchData:
         ls = list(db['zone1'].find().sort([('$natural', -1)]).limit(1))
         return ls[0]
 if __name__ == '__main__':
-    print
+    print 'hello world'

@@ -134,7 +134,5 @@ class Regression():
 if __name__=='__main__':
     r=Regression()
     f=fd()
-    #df=pd.read_csv('/home/pratik/PycharmProjects/project_sih/T/finalData/T1_test.csv')
     a=f.gettestdata()
-    print(a)
     print r.predict(a,'first test',zone=1)
