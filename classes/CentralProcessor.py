@@ -1,3 +1,5 @@
+from utils.function_schedular import FunSch
+
 class CentralProcessor():
 
     def __init__(self,curent_timestamp,default_api_code,last_schedules):
@@ -6,6 +8,8 @@ class CentralProcessor():
         self.last_schedules = last_schedules
 
     def periodic_prediction_schedular(self):
+
+
         pass
 
     def periodic_training_schedular(self):

@@ -1,7 +1,6 @@
 from sklearn import cross_validation
 from sklearn.linear_model import LinearRegression
 from sklearn.feature_selection import mutual_info_regression
-from sklearn.
 import pandas as pd
 import numpy as np
 from sklearn import decomposition,svm
@@ -28,7 +27,7 @@ df.to_csv('datasetv3.csv')
 train_y = np.asarray(df['load'])
 train_x = np.array(df.drop(['Date','load'],1))
 
-test_y = train_y [int(len(train_x)*0.9):]
+test_y = train_y[int(len(train_x)*0.9):]
 train_y = train_y[:int(len(train_y)*0.9)]
 train_x = preprocessing.scale(train_x)
 pca = decomposition.PCA(n_components=15)

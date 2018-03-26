@@ -1,9 +1,11 @@
-from FunSch import FunSch
+from utils.function_schedular import FunSch
+import os,signal
+import datetime
 import time
 def driver(num):
-    print "process created: ",num
+    print "process created: ",time.time(),num
 
 
-funOb = FunSch()
-funOb.info('driver')
-funOb.startNextHour(driver,(time.time()))
+
+FunSch.startNextHour((driver,50))
+print  "hello"

@@ -1,8 +1,9 @@
-import multiprocessing,datetime, time, schedule,os
+import multiprocessing,datetime, time, schedule,os,signal
 
 class FunSch():
 
     def __init__(self):
+        self.pid = None
         return
 
     @staticmethod
@@ -11,22 +12,34 @@ class FunSch():
         rounding = (seconds + roundTo) // roundTo * roundTo
         return dt + datetime.timedelta(0, rounding - seconds, -dt.microsecond)
 
-    def _Job(self):
-        def job(): self.fun_name(self.fun_arg)
-
-        nextHr = FunSch.roundTime(datetime.datetime.now(),roundTo=self.duration)
+    @staticmethod
+    def _Job(fun_tup):
+        def job():
+            fun_tup[0](fun_tup[1])
+        nextHr = FunSch.roundTime(datetime.datetime.now(),roundTo=3600)
         nextHr += datetime.timedelta(days=1)
         time.sleep((nextHr - datetime.datetime.now()).seconds)
-        schedule.every(1).hours.do(job)
-
+        schedule.every(1).minute.do(job)
+        job()
         while True:
             schedule.run_pending()
             time.sleep(1)
 
+    def info(self,title):
+        print title
+        print 'module name: ', __name__
+        if hasattr(os, 'getppid'):
+            print 'parent process:', os.getppid()
+        print 'process id:', os.getpid()
 
-    def startNextHour(self,fun_name,fun_arg):
-        self.duration =3600
-        self.fun_name = fun_name
-        self.fun_arg = fun_arg
-        p = multiprocessing.Process(target= self._Job)
+    @staticmethod
+    def startNextHour(fun_tup):
+        p = multiprocessing.Process(target= FunSch._Job,args=(fun_tup,))
         p.start()
+        p.join()
+
+    def print_pid(self):
+        print self.pid
+
+    def kill_schedular(self,name):
+        os.kill(self.pid[name],signal.SIGTERM)
