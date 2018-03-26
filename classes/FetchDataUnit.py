@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from bson import Binary
-import datetime,time
+import datetime
 
 class FetchData:
 
@@ -27,10 +27,11 @@ class FetchData:
         oid = str(name)
         db = self.client.picklestore
         col = db['zone' + str(zone)]
-        dic = col.find_one({'_id':oid})
-        return dic['obj'],dic['preprocessing'],dic['PCA']
+        dic = col.find({'_id':oid})
+        dic = list(dic)
+        return dic[0]['obj'],dic[0]['preprocessing'],dic[0]['PCA']
 
-    def storeObj(self, pickleobj, zone, acc,preobj,pca,name='{0}/{1}/{2}{3}'.format(datetime.datetime.now().day, datetime.datetime.now().month, datetime.datetime.now().year, datetime.datetime.now().hour)):
+    def storeObj(self, pickleobj, zone, acc, preobj,pca , name='{0}/{1}/{2}{3}'.format(datetime.datetime.now().day, datetime.datetime.now().month, datetime.datetime.now().year, datetime.datetime.now().hour)):
         db = self.client.picklestore
         col = db['zone' + str(zone)]
         dic = {'_id': name, 'obj': Binary(pickleobj), 'accuracy': acc,'preprocessing':preobj,'zone':zone,'PCA':pca}
@@ -51,11 +52,15 @@ class FetchData:
         db = self.client.one
         pre={}
         no=datetime.datetime.now()
-        pre['_id'] = str(no.day) + str(no.month) + str(no.year) + str(x)
+        pre['_id'] = str(no.day) + str(no.month) + str(no.year) + str(no.hour)
         pre['prediction'] = pred['prediction']
         pre['actual'] = 0
-        time.sleep(10)
         db.prediction.insert_one(pre)
 
+    def gettestdata(self):
+        cl = MongoClient(host='192.168.0.223')
+        db = cl.zones
+        ls = list(db['zone1'].find().sort([('$natural', -1)]).limit(1))
+        return ls[0]
 if __name__ == '__main__':
-    s = FetchData()
+    print

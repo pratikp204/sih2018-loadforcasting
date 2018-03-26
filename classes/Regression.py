@@ -110,9 +110,9 @@ class Regression():
 
     @staticmethod
     def predict(input_x,name,zone):
-        df=pd.DataFrame(input_x)
+        df=pd.DataFrame(input_x,index=[0])
         print(df)
-        df=df.drop(['date','load'],1)
+        df=df.drop(['date','load','_id'],1)
         df['hour2'] = pow(df['hour'],2)
         df['hour3'] = pow(df['hour'],3)
         df['hour4'] = pow(df['hour'],4)
@@ -124,7 +124,7 @@ class Regression():
         df['m4'] = pow(df['month'],4)
         x=np.asarray(df)
         f=fd()
-        obj,preobj,pca=f.get_obj(name,zone)
+        obj, preobj, pca=f.get_obj(name,zone)
         obj,preobj,pca=loads(obj),loads(preobj),loads(pca)
         x=preobj.transform(x)
         x=pca.transform(x)
@@ -133,5 +133,8 @@ class Regression():
 
 if __name__=='__main__':
     r=Regression()
-    df=pd.read_csv('/home/pratik/PycharmProjects/project_sih/T/finalData/T1_test.csv')
-    print r.predict(df[:1],'first test',zone=1)
+    f=fd()
+    #df=pd.read_csv('/home/pratik/PycharmProjects/project_sih/T/finalData/T1_test.csv')
+    a=f.gettestdata()
+    print(a)
+    print r.predict(a,'first test',zone=1)
