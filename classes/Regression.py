@@ -4,14 +4,13 @@ from FetchDataUnit import FetchData as fd
 from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn.ensemble import AdaBoostRegressor as ABR
 from sklearn.feature_selection import mutual_info_regression
-from sklearn import svm
 import pandas as pd
 import numpy as np
 from sklearn import decomposition,svm
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neural_network import MLPRegressor as mlpr
 #from scipy.stats import pearsonr
-from pickle import load,dumps
+from pickle import loads,dumps
 
 class Regression():
 
@@ -26,10 +25,12 @@ class Regression():
         if(n_components>15):
             n_components=15
         df=pd.DataFrame(input_set)
-        # df = df[24:]
-        # df['prevhr']=df.load.shift(+24)
+        #print len(df['load']),len(df['temp'])
+        #df = df[24:]
+        #df['prevhr']=df.load.shift(+24)
         # df['lasthr'] = df.load.shift(+1)
-        df = df[1:]
+        df = df.dropna()
+        #print df.isnull()
         df['hour2'] = pow(df['hour'],2)
         df['hour3'] = pow(df['hour'],3)
         df['hour4'] = pow(df['hour'],4)
@@ -39,16 +40,23 @@ class Regression():
         df['m2'] = pow(df['month'],2)
         df['m3'] = pow(df['month'],3)
         df['m4'] = pow(df['month'],4)
-        train_y=np.asarray(input_set['load'])
-        train_x=np.asarray(df.drop(['load','date']))
+
+        #print df.head(2)
+        train_y=np.asarray(df['load'])
+        train_x=np.asarray(df.drop(['load','date'],1))
+        #print len(train_x),len(train_y)
         scaler=MinMaxScaler()
         scaler.fit(train_x)
         train_x=scaler.transform(train_x)
+        #print len(train_x)
         pca = decomposition.PCA(n_components=n_components)
         pca.fit(train_x)
         train_x = pca.transform(train_x)
+        #print len(train_x)
         x_train, x_test, y_train, y_test = cross_validation.train_test_split(train_x, train_y, test_size=0.2)
+        #print len(x_train),len(x_test),len(y_train),len(y_test)
         return x_train,x_test,y_train,y_test,scaler,pca
+
     def create_model(self):
         pass
 
@@ -93,14 +101,18 @@ class Regression():
         pass
 
     @staticmethod
-    def save_model(self,obj,zone,score,preobj,pca,name):
-        du=dumps(obj)
+    def save_model(obj,zone,score,preobj,pca,name):
+        obj=dumps(obj)
+        preobj=dumps(preobj)
+        pca=dumps(pca)
         f=fd()
-        f.storeObj(pickleobj=du,zone=zone,acc=score,preobj=preobj,pca=pca,name=name)
+        f.storeObj(pickleobj=obj,zone=zone,acc=score,preobj=preobj,pca=pca,name=name)
 
     @staticmethod
-    def predict(self,input_x,name,zone):
+    def predict(input_x,name,zone):
         df=pd.DataFrame(input_x)
+        print(df)
+        df=df.drop(['date','load'],1)
         df['hour2'] = pow(df['hour'],2)
         df['hour3'] = pow(df['hour'],3)
         df['hour4'] = pow(df['hour'],4)
@@ -110,15 +122,16 @@ class Regression():
         df['m2'] = pow(df['month'],2)
         df['m3'] = pow(df['month'],3)
         df['m4'] = pow(df['month'],4)
+        x=np.asarray(df)
         f=fd()
         obj,preobj,pca=f.get_obj(name,zone)
-        input_x=preobj.transform(input_x)
-        input_x=pca.transform(input_x)
-        return obj.predict(input_x)
+        obj,preobj,pca=loads(obj),loads(preobj),loads(pca)
+        x=preobj.transform(x)
+        x=pca.transform(x)
+        return obj.predict(x)
 
 
 if __name__=='__main__':
     r=Regression()
-    clf,score,algo,scaler,pca=r.train(zone=1,num=1)
-    print(score)
-    Regression.save_model(clf,1,score,scaler,pca,'first test')
+    df=pd.read_csv('/home/pratik/PycharmProjects/project_sih/T/finalData/T1_test.csv')
+    print r.predict(df[:1],'first test',zone=1)

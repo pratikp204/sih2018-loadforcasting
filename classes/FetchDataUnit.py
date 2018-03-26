@@ -27,7 +27,7 @@ class FetchData:
         oid = str(name)
         db = self.client.picklestore
         col = db['zone' + str(zone)]
-        dic = col.find({'_id':oid})
+        dic = col.find_one({'_id':oid})
         return dic['obj'],dic['preprocessing'],dic['PCA']
 
     def storeObj(self, pickleobj, zone, acc,preobj,pca,name='{0}/{1}/{2}{3}'.format(datetime.datetime.now().day, datetime.datetime.now().month, datetime.datetime.now().year, datetime.datetime.now().hour)):
