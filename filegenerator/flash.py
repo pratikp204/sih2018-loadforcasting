@@ -1,29 +1,26 @@
-import matplotlib.pyplot as plt
-from statistics import  mean
-import pandas as pd
-from graphGenerator import graph_generator
+# from classes import Regression
+# import threading
 
-df = pd.read_csv('Constructed datasetV2.csv')
 
-hours = df['Hour']
-ld = df['load']
-loads = []
-loads.append(0)
-for i in range(1,len(ld)):
-    loads.append(ld[i]-ld[i-1])
-graph_generator(range(1,25),loads,hours,(1,25))
 
-#
-# hourload = {}
-# for i in range(1,25):
-#     hourload[i] = []
-# for i in range(len(hours)):
-#     hourload[hours[i]].append(loads[i])
-# avg_load = []
-#
-# for i in range(1,25):
-#     avg_load.append(mean(hourload[i]))
-#
-# plt.plot(range(1,25),avg_load)
-# plt.legend()
-# plt.show()
+def prr(tem,num,id):
+    print tem,num,id
+
+def man_trainer(hper_para):
+    ref = {0:'tem',1:'num',2:'id'}
+    lis = [None]*3
+    default = ['shivam',5,'dragon']
+    for i in range(3):
+        if ref[i] in hper_para:
+            lis[i] = hper_para[ref[i]]
+        else:
+            lis[i] = default[i]
+
+    prr(lis[0],lis[1],lis[2])
+
+
+
+
+
+
+man_trainer({'num':23,'id':43})

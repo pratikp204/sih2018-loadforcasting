@@ -1,6 +1,7 @@
 from statistics import mean
 import numpy as np
 import matplotlib.pyplot as plt
+from classes import CentralProcessor
 
 class Graph_gen():
 
@@ -27,3 +28,5 @@ class Graph_gen():
         if showgraph:
             plt.show()
         plt.close()
+if __name__=='__main__':
+    CentralProcessor.periodic_prediction_schedular(1)

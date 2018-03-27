@@ -4,12 +4,11 @@ import datetime
 
 class FetchData:
 
-    def __init__(self):
-        self.client = MongoClient(host='192.168.0.223')
+    def __init__(self,url):
+        self.client = MongoClient(host=url)
 
     def getTrainData(self,zone):
-        client=self.client
-        db = client.zones
+        db = self.client.zones
         val = {'temp':[],'date':[],'hour':[],'month':[],'weekday':[],'load':[],'prevload':[],'lasthr':[]}
         curs=db['zone'+str(zone)].find()
         for doc in curs:
@@ -40,27 +39,29 @@ class FetchData:
     def setCurrentObj(self, obj, zone, name,preobj,pca,acc):
         db = self.client.picklestore
         col = db['currentWrkObj']
-        col.update({'_id': zone}, {'$set': {'_id': zone, 'obj': Binary(obj), 'name': name,'preprocessing':preobj,'PCA':pca,'accuracy':acc}}, {'$upsert': True})
+        col.update({'_id': zone}, {'$set': {'_id': zone, 'obj': Binary(obj), 'name': name,'preprocessing':preobj,'PCA':pca,'accuracy':acc}}, upsert=True)
 
     def get_current_obj(self,zone):
         db = self.client.picklestore
         col = db['currentWrkObj']
-        val = col.find({'zone': zone})
-        return val['obj'],val['preprocessing'],val['PCA']
+        val = list(col.find({'_id': zone}))
+        return val[0]['obj'],val[0]['preprocessing'],val[0]['PCA']
 
-    def predictstore(self,pred):
-        db = self.client.one
-        pre={}
-        no=datetime.datetime.now()
-        pre['_id'] = str(no.day) + str(no.month) + str(no.year) + str(no.hour)
-        pre['prediction'] = pred['prediction']
-        pre['actual'] = 0
-        db.prediction.insert_one(pre)
 
-    def gettestdata(self):
-        cl = MongoClient(host='192.168.0.223')
-        db = cl.zones
-        ls = list(db['zone1'].find().sort([('$natural', -1)]).limit(1))
+    def predictstore(self,id,pred_load,actual_load,zone):
+        load_dict = {'_id': id, 'actual_load': actual_load, 'pred_load': pred_load}
+        db = self.client.prediction
+        col =db['zone{}'.format(zone)]
+        col.insert_one(load_dict)
+
+
+    def gettestdata(self,dataid,zone):
+        db = self.client.tests
+        ls = list(db['zone{}'.format(zone)].find({'_id':dataid}).sort([('$natural', -1)]).limit(1))
         return ls[0]
+
+    def __del__(self):
+        self.client.close()
+
 if __name__ == '__main__':
-    print 'hello world'
+    print (FetchData.gettestdata(FetchData('192.168.0.173'),'1/1/20081',1))

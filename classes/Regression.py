@@ -60,8 +60,8 @@ class Regression():
     def create_model(self):
         pass
 
-    def train(self,zone,num,hidden_layer_size=(4),n_jobs=1,kernel='rbf',n_components=15,n_estimators=50,loss='linear',learning_rate=1.0):
-        f=fd()
+    def train(self,zone,num,hidden_layer_size=(4),n_jobs=1,kernel='rbf',n_components=15,n_estimators=50,loss='linear',learning_rate=1.0,host='127.0.0.1'):
+        f=fd(host)
         input_set=f.getTrainData(zone)
         x_train, x_test, y_train, y_test,scaler,pca =self.read_dataset(input_set,n_components)
         if num==1:
@@ -101,17 +101,16 @@ class Regression():
         pass
 
     @staticmethod
-    def save_model(obj,zone,score,preobj,pca,name):
+    def save_model(obj,zone,score,preobj,pca,name,host):
         obj=dumps(obj)
         preobj=dumps(preobj)
         pca=dumps(pca)
-        f=fd()
+        f=fd(host)
         f.storeObj(pickleobj=obj,zone=zone,acc=score,preobj=preobj,pca=pca,name=name)
 
     @staticmethod
-    def predict(input_x,name,zone):
+    def predict(input_x,name,zone,port):
         df=pd.DataFrame(input_x,index=[0])
-        print(df)
         df=df.drop(['date','load','_id'],1)
         df['hour2'] = pow(df['hour'],2)
         df['hour3'] = pow(df['hour'],3)
@@ -123,8 +122,8 @@ class Regression():
         df['m3'] = pow(df['month'],3)
         df['m4'] = pow(df['month'],4)
         x=np.asarray(df)
-        f=fd()
-        obj, preobj, pca=f.get_obj(name,zone)
+        f=fd(port)
+        obj, preobj, pca=f.get_current_obj(zone)
         obj,preobj,pca=loads(obj),loads(preobj),loads(pca)
         x=preobj.transform(x)
         x=pca.transform(x)
@@ -132,7 +131,9 @@ class Regression():
 
 
 if __name__=='__main__':
-    r=Regression()
-    f=fd()
-    a=f.gettestdata()
-    print r.predict(a,'first test',zone=1)
+    # a = fd.gettestdata(fd('192.168.0.173'),'1/1/20081',1)
+    # print(a['load'])
+    # x = Regression.predict(a,'first test',1,'192.168.0.173')
+    # print(x[0])
+    clf, acurracy,name, scaler, pca = Regression.train(Regression(),4,1,host='192.168.0.173')
+    fd.setCurrentObj(fd('192.168.0.173'),dumps(clf),4,name,dumps(scaler),dumps(pca),acurracy)

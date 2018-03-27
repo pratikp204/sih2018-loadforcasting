@@ -1,5 +1,6 @@
 import multiprocessing,datetime, time, schedule,os,signal
 
+
 class FunSch():
 
     def __init__(self):
@@ -45,13 +46,6 @@ class FunSch():
             schedule.run_pending()
             time.sleep(1)
 
-    def info(self,title):
-        print title
-        print 'module name: ', __name__
-        if hasattr(os, 'getppid'):
-            print 'parent process:', os.getppid()
-        print 'process id:', os.getpid()
-
     @staticmethod
     def pediction_start_next_hour(fun_tup):
         v = multiprocessing.Value('i',0)
@@ -59,6 +53,13 @@ class FunSch():
         p = multiprocessing.Process(target= FunSch._Job,args=(fun_tup,v,lock,))
         p.start()
         p.join()
+
+    def info(self, title):
+        print title
+        print 'module name: ', __name__
+        if hasattr(os, 'getppid'):
+            print 'parent process:', os.getppid()
+        print 'process id:', os.getpid()
 
     def print_pid(self):
         print self.pid
