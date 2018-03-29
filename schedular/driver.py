@@ -15,11 +15,16 @@
 #                 continue
 #             print '{}/{}/2008{}'.format(d, m, h)
 from apscheduler.schedulers.background import BackgroundScheduler
-
+from pymongo import MongoClient
 def fn():
+    client = MongoClient('127.0.0.1:27018')
+    db = client['inazuma eleven']
+    col = db['one']
+    col.insert({'shivam':'awesome'})
+    client.close()
     print ("Hello, world")
-
+    exit(1)
 
 scheduler = BackgroundScheduler()
 scheduler.start()
-scheduler.add_job(fn, trigger='cron', second=59)
+scheduler.add_job(fn, trigger='cron', second=0)

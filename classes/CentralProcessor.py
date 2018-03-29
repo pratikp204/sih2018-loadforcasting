@@ -1,6 +1,8 @@
 from Regression import Regression
 from FetchDataUnit import FetchData
 import multiprocessing,datetime,schedule,time
+from threading import Thread
+
 class CentralProcessor():
 
     def __init__(self,curent_timestamp,default_api_code,last_schedules):
@@ -9,13 +11,20 @@ class CentralProcessor():
         self.last_schedules = last_schedules
 
     @staticmethod
-    def periodic_prediction_schedular(zone,port='192.168.0.173'):
+    def zone_periodic_prediction(zone,port='192.168.0.173'):
         v = multiprocessing.Value('i', 0)
         lock = multiprocessing.Lock()
         p = multiprocessing.Process(target=CentralProcessor._Job, args=(zone, v, lock,port,))
         p.start()
         p.join()
 
+    @staticmethod
+    def periodic_prediction_schedular():
+        v = multiprocessing.Array('i',)
+        lock = multiprocessing.Lock()
+        p = multiprocessing.Process(target=CentralProcessor._Job, args=(zone, v, lock, port,))
+        p.start()
+        p.join()
 
     def periodic_training_schedular(self):
         pass
@@ -32,6 +41,11 @@ class CentralProcessor():
     def schedule_training(self):
         pass
 
+    @staticmethod
+    def run_ten_prediction( v, lock, port):
+        for i in range(1,11):
+            t = Thread(target=CentralProcessor._Job, args=(i,v,lock,port,))
+            t.start()
     @staticmethod
     def roundTime(dt, roundTo=60):
         seconds = (dt.replace(tzinfo=None) - dt.min).seconds
