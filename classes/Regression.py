@@ -3,13 +3,11 @@ from sklearn.linear_model import LinearRegression
 from FetchDataUnit import FetchData as fd
 from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn.ensemble import AdaBoostRegressor as ABR
-from sklearn.feature_selection import mutual_info_regression
 import pandas as pd
 import numpy as np
 from sklearn import decomposition,svm
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.neural_network import MLPRegressor as mlpr
-#from scipy.stats import pearsonr
 from pickle import loads,dumps
 
 class Regression():
@@ -124,6 +122,7 @@ class Regression():
         x=np.asarray(df)
         f=fd(port)
         obj, preobj, pca=f.get_current_obj(zone)
+        del f
         obj,preobj,pca=loads(obj),loads(preobj),loads(pca)
         x=preobj.transform(x)
         x=pca.transform(x)

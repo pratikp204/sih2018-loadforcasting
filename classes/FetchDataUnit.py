@@ -49,8 +49,10 @@ class FetchData:
 
 
     def predictstore(self,id,pred_load,actual_load,zone):
-        load_dict = {'_id': id, 'actual_load': actual_load, 'pred_load': pred_load}
-        db = self.client.prediction
+        pred_err = (actual_load-pred_load) / float(actual_load)
+        # err = actual_load-pred_load
+        load_dict = {'_id': id, 'actual_load': actual_load, 'pred_load': pred_load,'pred_err': pred_err*100}
+        db = self.client.prediction2
         col =db['zone{}'.format(zone)]
         col.insert_one(load_dict)
 
